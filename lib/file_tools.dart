@@ -2,6 +2,7 @@ class FileTools {
   static List<String> imgExtList = [
     'bmp',
     'jpg',
+    'jpeg',
     'png',
     'tif',
     'gif',
@@ -18,7 +19,7 @@ class FileTools {
     'eps',
     'ai',
     'raw',
-    'WMF',
+    'wmf',
     'webp',
     'avif',
     'apng'
@@ -42,6 +43,16 @@ class FileTools {
     'mp4'
   ];
 
+  static List<String> filePreviewExtList = [
+    'doc',
+    'docx',
+    'ppt',
+    'pptx',
+    'xls',
+    'xlsx',
+    'pdf'
+  ];
+
   static Map<String, String> fileExtMap = {
     'apk': 'img/apk.png',
     'dmg': 'img/dmg.png',
@@ -51,9 +62,11 @@ class FileTools {
     'floder': 'img/file_floder.png',
     'pdf': 'img/file_pdf.png',
     'ppt': 'img/file_ppt.png',
+    'pptx': 'img/file_ppt.png',
     'qita': 'img/file_qita.png',
     'txt': 'img/file_txt.png',
-    'word': 'img/file_word.png',
+    'doc': 'img/file_word.png',
+    'docx': 'img/file_word.png',
     'ipa': 'img/ipa.png',
     'ipsw': 'img/ipsw.png',
     'iso': 'img/iso.png',
@@ -78,6 +91,10 @@ extension ZFile on String {
 
   bool isImgFile() {
     return FileTools.imgExtList.contains(ext().toLowerCase());
+  }
+
+  bool isPreviewFile() {
+    return FileTools.filePreviewExtList.contains(ext().toLowerCase());
   }
 
   String thumbnailUrl() {

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:zfile/file_preview.dart';
 import 'package:zfile/photo_preview.dart';
 import 'video_preview.dart';
 import 'Api.dart';
@@ -96,6 +97,7 @@ class _DirListState extends State<DirList> {
     bool isFolder = (type.compareTo('FOLDER') == 0);
     bool isImg = (model.url ?? '').isImgFile();
     bool isVideo = (model.url ?? '').isVideoFile();
+    bool isPreviewFile = (model.url ?? '').isPreviewFile();
     String? img;
     if (isImg) {
       img = model.url?.thumbnailUrl() ?? '';
@@ -151,6 +153,11 @@ class _DirListState extends State<DirList> {
           } else if (isVideo) {
             Navigator.push(context,
                 MaterialPageRoute(builder: (_) => VideoPreview(model: model)));
+          } else if (isPreviewFile) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => FilePreviewPage(model: model)));
           }
         }
       },
