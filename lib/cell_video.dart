@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:path_provider/path_provider.dart';
 
 class VideoCell extends StatefulWidget {
   final String img;
@@ -21,12 +22,19 @@ class VideoCell extends StatefulWidget {
 class VideoCellState extends State<VideoCell> {
   File? file;
   Future _genThumbnailFile() async {
-    final thumbnail = await VideoThumbnail.thumbnailFile(
-      video: widget.originUrl,
-      imageFormat: ImageFormat.JPEG,
-      maxWidth: 100,
-      quality: 75,
-    );
+    String name = widget.name?.split('.').first ?? '';
+    Directory tempDirectory = await getTemporaryDirectory();
+
+    String? thumbnail = '${tempDirectory.path}/$name.jpg';
+    File? cacheFile = File(thumbnail);
+    if (!cacheFile.existsSync()) {
+      thumbnail = await VideoThumbnail.thumbnailFile(
+        video: widget.originUrl,
+        imageFormat: ImageFormat.JPEG,
+        maxWidth: 100,
+        quality: 75,
+      );
+    }
     setState(() {
       if (thumbnail != null) {
         file = File(thumbnail);
