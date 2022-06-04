@@ -115,6 +115,7 @@ class _DirListState extends State<DirList> {
         padding: const EdgeInsets.all(0.0),
         child: Cell(
           img: img,
+          originUrl: model.url ?? '',
           name: model.name,
         ),
       ),

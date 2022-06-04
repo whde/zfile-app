@@ -5,11 +5,14 @@ class Cell extends StatefulWidget {
   const Cell({
     Key? key,
     required this.img,
+    required this.originUrl,
     this.name,
   }) : super(key: key);
 
   final String img;
+  final String originUrl;
   final String? name;
+
   @override
   CellState createState() => CellState();
 }
@@ -29,6 +32,9 @@ class CellState extends State<Cell> {
                 child: widget.img.contains('http')
                     ? CachedNetworkImage(
                         imageUrl: widget.img,
+                        errorWidget: (context, url, error) => CachedNetworkImage(
+                            imageUrl: widget.originUrl
+                        ),
                       )
                     : Image.asset(widget.img),
               ),

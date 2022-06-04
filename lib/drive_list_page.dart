@@ -76,6 +76,7 @@ class _DriveListState extends State<DriveList> {
         padding: const EdgeInsets.all(0.0),
         child: Cell(
           img: 'img/drive.png',
+          originUrl: '',
           name: model.name,
         ),
       ),
