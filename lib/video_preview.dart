@@ -18,10 +18,9 @@ class RotationAndFitPageState extends State<VideoPreview> {
   late BetterPlayerController _betterPlayerController;
   @override
   void initState() {
-    BetterPlayerConfiguration betterPlayerConfiguration = const BetterPlayerConfiguration(
-      fit: BoxFit.scaleDown,
-        expandToFill: true
-    );
+    BetterPlayerConfiguration betterPlayerConfiguration =
+        const BetterPlayerConfiguration(
+            fit: BoxFit.scaleDown, expandToFill: true);
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network, widget.model.url!);
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);

@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
 
-class Cell extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
+
+class VideoCell extends StatefulWidget {
   final String img;
   final String originUrl;
   final String? name;
-  const Cell({
+  const VideoCell({
     Key? key,
     required this.img,
     required this.originUrl,
@@ -13,10 +15,31 @@ class Cell extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  CellState createState() => CellState();
+  VideoCellState createState() => VideoCellState();
 }
 
-class CellState extends State<Cell> {
+class VideoCellState extends State<VideoCell> {
+  File? file;
+  Future _genThumbnailFile() async {
+    final thumbnail = await VideoThumbnail.thumbnailFile(
+      video: widget.originUrl,
+      imageFormat: ImageFormat.JPEG,
+      maxWidth: 100,
+      quality: 75,
+    );
+    setState(() {
+      if (thumbnail != null) {
+        file = File(thumbnail);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _genThumbnailFile();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,13 +51,8 @@ class CellState extends State<Cell> {
               SizedBox(
                 width: 42,
                 height: 53,
-                child: widget.img.contains('http')
-                    ? CachedNetworkImage(
-                        imageUrl: widget.img,
-                        errorWidget: (context, url, error) =>
-                            CachedNetworkImage(imageUrl: widget.originUrl),
-                      )
-                    : Image.asset(widget.img),
+                child:
+                    file != null ? Image.file(file!) : Image.asset(widget.img),
               ),
               Expanded(
                   child: Container(

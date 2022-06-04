@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:zfile/cell_video.dart';
 import 'package:zfile/file_preview.dart';
+import 'package:zfile/file_type.dart';
 import 'package:zfile/photo_preview.dart';
 import 'video_preview.dart';
 import 'Api.dart';
@@ -93,75 +95,122 @@ class _DirListState extends State<DirList> {
 
   Widget _getRow(int i) {
     DirModel model = fileList[i];
-    String type = model.type ?? '';
-    bool isFolder = (type.compareTo('FOLDER') == 0);
-    bool isImg = (model.url ?? '').isImgFile();
-    bool isVideo = (model.url ?? '').isVideoFile();
-    bool isPreviewFile = (model.url ?? '').isPreviewFile();
-    String? img;
-    if (isImg) {
-      img = model.url?.thumbnailUrl() ?? '';
-    } else if (isVideo) {
-      img = 'img/video.png';
-    } else {
-      String url = 'floder';
-      if (!isFolder) {
-        url = model.url ?? '';
-      }
-      img = url.fileICON();
-    }
+    FileType type = model.getFileType();
+    String? img = _fileListImage(type, model) ?? '';
     return GestureDetector(
       child: Padding(
         padding: const EdgeInsets.all(0.0),
-        child: Cell(
-          img: img,
-          originUrl: model.url ?? '',
-          name: model.name,
-        ),
+        child: _cell(img, model),
       ),
       onTap: () {
-        if (kDebugMode) {
-          var name = model.name ?? '';
-          var path = model.path ?? '';
-          print('name: $path$name');
-          if (isFolder) {
-            Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => DirList(
-                          driveModel: widget.driveModel,
-                          path: path + name,
-                        )));
-          } else if (isImg) {
-            List<DirModel> list = [];
-            int index = 0;
-            for (var element in fileList) {
-              if (!(element.url ?? '').isImgFile()) {
-                continue;
-              }
-              if (element == model) {
-                index = list.length;
-              }
-              list.add(element);
-            }
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => PhotoPreview(
-                          galleryItems: list,
-                          defaultImage: index,
-                        )));
-          } else if (isVideo) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => VideoPreview(model: model)));
-          } else if (isPreviewFile) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => FilePreviewPage(model: model)));
-          }
-        }
+        _cellOnTap(model, type);
       },
     );
+  }
+
+  Widget _cell(String img, DirModel model) {
+    switch (model.getFileType()) {
+      case FileType.video:
+        return _videoCell(img, model);
+      default:
+        return _universalCell(img, model);
+    }
+  }
+
+  Cell _universalCell(String img, DirModel model) {
+    return Cell(
+        img: img,
+        originUrl: model.url ?? '',
+        name: model.name,
+      );
+  }
+
+  VideoCell _videoCell(String img, DirModel model) {
+    return VideoCell(
+      img: img,
+      originUrl: model.url ?? '',
+      name: model.name,
+    );
+  }
+
+  void _cellOnTap(DirModel model, FileType type) {
+    var name = model.name ?? '';
+    var path = model.path ?? '';
+    if (kDebugMode) {
+      print('name: $path$name');
+    }
+    switch (type) {
+      case FileType.folder:
+        _toFolder(path, name);
+        break;
+      case FileType.image:
+        _toImages(model);
+        break;
+      case FileType.video:
+        _toVideo(model);
+        break;
+      case FileType.docFile:
+        _toFile(model);
+        break;
+      case FileType.unknown:
+        // TODO: Handle this case.
+        break;
+    }
+  }
+
+  String? _fileListImage(FileType type, DirModel model) {
+    switch (type) {
+      case FileType.video:
+        return 'img/video.png';
+      case FileType.image:
+        return model.url?.thumbnailUrl() ?? '';
+      default:
+        String url = 'floder';
+        if (!(type == FileType.folder)) {
+          url = model.url ?? '';
+        }
+        return url.fileICON();
+    }
+  }
+
+  void _toFile(DirModel model) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (_) => FilePreviewPage(model: model)));
+  }
+
+  void _toVideo(DirModel model) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (_) => VideoPreview(model: model)));
+  }
+
+  void _toImages(DirModel model) {
+    List<DirModel> list = [];
+    int index = 0;
+    for (var element in fileList) {
+      if (!(element.url ?? '').isImgFile()) {
+        continue;
+      }
+      if (element == model) {
+        index = list.length;
+      }
+      list.add(element);
+    }
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => PhotoPreview(
+                  galleryItems: list,
+                  defaultImage: index,
+                )));
+  }
+
+  void _toFolder(String path, String name) {
+    Navigator.push(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => DirList(
+                  driveModel: widget.driveModel,
+                  path: path + name,
+                )));
   }
 }

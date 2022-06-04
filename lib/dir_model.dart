@@ -1,3 +1,6 @@
+import 'package:zfile/file_type.dart';
+import 'package:zfile/file_tools.dart';
+
 /// name : "iPhone_20190903_235103.vcf"
 /// time : "2019-09-03 23:51"
 /// size : 456008
@@ -68,5 +71,21 @@ class DirModel {
     map['path'] = _path;
     map['url'] = _url;
     return map;
+  }
+
+  FileType getFileType() {
+    String type = _type ?? '';
+    String url = _url ?? '';
+    if (type.compareTo('FOLDER') == 0) {
+      return FileType.folder;
+    }else if (url.isImgFile()){
+      return FileType.image;
+    }else if (url.isVideoFile() ) {
+      return FileType.video;
+    } else if (url.isPreviewFile()) {
+      return FileType.docFile;
+    } else {
+      return FileType.unknown;
+    }
   }
 }

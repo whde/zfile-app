@@ -13,11 +13,12 @@ class PhotoPreview extends StatefulWidget {
   final Axis direction; //图片查看方向
 
   const PhotoPreview({
+    Key? key,
     required this.galleryItems,
     this.defaultImage = 1,
     this.pageChanged,
     this.direction = Axis.horizontal,
-  });
+  }) : super(key: key);
   @override
   PhotoPreviewState createState() => PhotoPreviewState();
 }
@@ -44,7 +45,6 @@ class PhotoPreviewState extends State<PhotoPreview> {
               scrollPhysics: const BouncingScrollPhysics(),
               builder: (BuildContext context, int index) {
                 return PhotoViewGalleryPageOptions(
-                  // imageProvider: NetworkImage(widget.galleryItems[index].url!),
                   imageProvider: CachedNetworkImageProvider(
                      widget.galleryItems[index].url!,
                   ),
@@ -62,7 +62,6 @@ class PhotoPreviewState extends State<PhotoPreview> {
                     }
                   })),
           Positioned(
-            ///布局自己换
             bottom: 20,
             right: 20,
             child: Text(
